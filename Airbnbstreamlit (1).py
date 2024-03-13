@@ -57,7 +57,7 @@ if select == "Home":
 
 
 if select == "Data Exploration":
-    tab1, tab2, tab3, tab4, tab5= st.tabs(["***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***", "***TOP CHARTS***"])
+    tab1, tab2, tab3, tab4= st.tabs(["***PRICE ANALYSIS***","***AVAILABILITY ANALYSIS***","***LOCATION BASED***", "***GEOSPATIAL VISUALIZATION***"])
     with tab1:
         st.title("**PRICE DIFFERENCE**")
         col1,col2= st.columns(2)
@@ -114,7 +114,7 @@ if select == "Data Exploration":
 
             df5= df4[df4["host_response_time"] == hostresponsetime]
 
-            df_do_bar= pd.DataFrame(df5.groupby("bed_type")[["minimum_nights","maximum_nights","price"]].sum())
+            df_do_bar= pd.DataFrame(df4.groupby("bed_type")[["minimum_nights","maximum_nights","price"]].sum())
             df_do_bar.reset_index(inplace= True)
 
             fig_do_bar = px.bar(df_do_bar, x='bed_type', y=['minimum_nights', 'maximum_nights'], 
@@ -165,7 +165,7 @@ if select == "Data Exploration":
             df2_a= df1_a[df1_a["property_type"] == property_ty_a]
             df2_a.reset_index(drop= True, inplace= True)
 
-            df_a_sunb_30= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_30",width=600,height=500,title="Availability_30",color_discrete_sequence=px.colors.sequential.Peach_r)
+            df_a_sunb_30= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_30",width=600,height=500,title="Availability_30 Days",color_discrete_sequence=px.colors.sequential.Peach_r)
             st.plotly_chart(df_a_sunb_30)
         
         with col2:
@@ -181,33 +181,21 @@ if select == "Data Exploration":
             st.write("")
             
 
-            df_a_sunb_60= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_60",width=600,height=500,title="Availability_60",color_discrete_sequence=px.colors.sequential.Blues_r)
+            df_a_sunb_60= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_60",width=600,height=500,title="Availability_60 Days",color_discrete_sequence=px.colors.sequential.Blues_r)
             st.plotly_chart(df_a_sunb_60)
 
         col1,col2= st.columns(2)
 
         with col1:
             
-            df_a_sunb_90= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_90",width=600,height=500,title="Availability_90",color_discrete_sequence=px.colors.sequential.Aggrnyl_r)
+            df_a_sunb_90= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_90",width=600,height=500,title="Availability_90 Days",color_discrete_sequence=px.colors.sequential.Aggrnyl_r)
             st.plotly_chart(df_a_sunb_90)
 
         with col2:
 
-            df_a_sunb_365= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_365",width=600,height=500,title="Availability_365",color_discrete_sequence=px.colors.sequential.Greens_r)
+            df_a_sunb_365= px.sunburst(df2_a, path=["room_type","bed_type","is_location_exact"], values="availability_365",width=600,height=500,title="Availability_365 Days",color_discrete_sequence=px.colors.sequential.Greens_r)
             st.plotly_chart(df_a_sunb_365)
         
-        roomtype_a= st.selectbox("Select the Room Type_a", df2_a["room_type"].unique())
-
-        df3_a= df2_a[df2_a["room_type"] == roomtype_a]
-
-        df_mul_bar_a= pd.DataFrame(df3_a.groupby("host_response_time")[["availability_30","availability_60","availability_90","availability_365","price"]].sum())
-        df_mul_bar_a.reset_index(inplace= True)
-
-        fig_df_mul_bar_a = px.bar(df_mul_bar_a, x='host_response_time', y=['availability_30', 'availability_60', 'availability_90', "availability_365"], 
-        title='AVAILABILITY BASED ON HOST RESPONSE TIME',hover_data=["price"],
-        barmode='group',color_discrete_sequence=px.colors.sequential.Rainbow_r,width=1000)
-
-        st.plotly_chart(fig_df_mul_bar_a)
 
 
     with tab3:
@@ -314,88 +302,6 @@ if select == "Data Exploration":
         st.plotly_chart(fig_4)   
 
 
-    with tab5:
-
-        country_t= st.selectbox("Select the Country_t",df["country"].unique())
-
-        df1_t= df[df["country"] == country_t]
-
-        property_ty_t= st.selectbox("Select the Property_type_t",df1_t["property_type"].unique())
-
-        df2_t= df1_t[df1_t["property_type"] == property_ty_t]
-        df2_t.reset_index(drop= True, inplace= True)
-
-        df2_t_sorted= df2_t.sort_values(by="price")
-        df2_t_sorted.reset_index(drop= True, inplace= True)
-
-
-        df_price= pd.DataFrame(df2_t_sorted.groupby("host_neighbourhood")["price"].agg(["sum","mean"]))
-        df_price.reset_index(inplace= True)
-        df_price.columns= ["host_neighbourhood", "Total_price", "Avarage_price"]
-        
-        col1, col2= st.columns(2)
-
-        with col1:
-            
-            fig_price= px.bar(df_price, x= "Total_price", y= "host_neighbourhood", orientation='h',
-                            title= "PRICE BASED ON HOST_NEIGHBOURHOOD", width= 600, height= 800)
-            st.plotly_chart(fig_price)
-
-        with col2:
-
-            fig_price_2= px.bar(df_price, x= "Avarage_price", y= "host_neighbourhood", orientation='h',
-                                title= "AVERAGE PRICE BASED ON HOST_NEIGHBOURHOOD",width= 600, height= 800)
-            st.plotly_chart(fig_price_2)
-
-        col1, col2= st.columns(2)
-
-        with col1:
-
-            df_price_1= pd.DataFrame(df2_t_sorted.groupby("host_location")["price"].agg(["sum","mean"]))
-            df_price_1.reset_index(inplace= True)
-            df_price_1.columns= ["host_location", "Total_price", "Avarage_price"]
-            
-            fig_price_3= px.bar(df_price_1, x= "Total_price", y= "host_location", orientation='h',
-                                width= 600,height= 800,color_discrete_sequence=px.colors.sequential.Bluered_r,
-                                title= "PRICE BASED ON HOST_LOCATION")
-            st.plotly_chart(fig_price_3)
-
-        with col2:
-
-            fig_price_4= px.bar(df_price_1, x= "Avarage_price", y= "host_location", orientation='h',
-                                width= 600, height= 800,color_discrete_sequence=px.colors.sequential.Bluered_r,
-                                title= "AVERAGE PRICE BASED ON HOST_LOCATION")
-            st.plotly_chart(fig_price_4)
-
-
-        room_type_t= st.selectbox("Select the Room_Type_t",df2_t_sorted["room_type"].unique())
-
-        df3_t= df2_t_sorted[df2_t_sorted["room_type"] == room_type_t]
-
-        df3_t_sorted_price= df3_t.sort_values(by= "price")
-
-        df3_t_sorted_price.reset_index(drop= True, inplace = True)
-
-        df3_top_50_price= df3_t_sorted_price.head(100)
-
-        fig_top_50_price_1= px.bar(df3_top_50_price, x= "name",  y= "price" ,color= "price",
-                                 color_continuous_scale= "rainbow",
-                                range_color=(0,df3_top_50_price["price"].max()),
-                                title= "MINIMUM_NIGHTS MAXIMUM_NIGHTS AND ACCOMMODATES",
-                                width=1200, height= 800,
-                                hover_data= ["minimum_nights","maximum_nights","accommodates"])
-        
-        st.plotly_chart(fig_top_50_price_1)
-
-        fig_top_50_price_2= px.bar(df3_top_50_price, x= "name",  y= "price",color= "price",
-                                 color_continuous_scale= "greens",
-                                 title= "BEDROOMS, BEDS, ACCOMMODATES AND BED_TYPE",
-                                range_color=(0,df3_top_50_price["price"].max()),
-                                width=1200, height= 800,
-                                hover_data= ["accommodates","bedrooms","beds","bed_type"])
-
-        st.plotly_chart(fig_top_50_price_2)
-
 if select == "About":
 
     st.header("ABOUT THIS PROJECT")
@@ -425,8 +331,3 @@ if select == "About":
 
     st.write('''***Utilize geospatial analysis to understand the geographical distribution of listings.
         Map out popular areas, analyze neighborhood characteristics, and visualize pricing variations.***''')
-
-
-
-
-
